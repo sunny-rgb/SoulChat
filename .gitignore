@@ -36,3 +36,5 @@ bin/
 *.swp
 
 deploy/mysql/data/
+
+internal/swagger-ui/dist
