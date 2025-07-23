@@ -115,6 +115,7 @@ service Conduit {
   rpc FavoriteArticle(FavoriteArticleRequest) returns (SingleArticleReply) {
     option (google.api.http) = {
       post : "/api/articles/{slug}/favorite",
+      body: "*",
     };
   }
 
