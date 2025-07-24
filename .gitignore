@@ -38,4 +38,4 @@ bin/
 deploy/mysql/data/
 
 internal/swagger-ui/dist
-internal/swagger-ui/dist/openapi.yaml
+internal/swagger-ui/openapi.yaml
