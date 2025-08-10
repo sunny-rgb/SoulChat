@@ -35,8 +35,4 @@ bin/
 .idea/
 *.swp
 
-deploy/mysql/
-deploy/redis/
-
-internal/swagger-ui/dist
-internal/swagger-ui/openapi.yaml
+deploy/mysql/data/

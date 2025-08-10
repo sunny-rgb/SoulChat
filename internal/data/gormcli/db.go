@@ -108,6 +108,7 @@ func newDB(options Options) {
 	connArgs := fmt.Sprintf(dsn, options.user,
 		options.password, options.addr, options.dataBase)
 	if options.slowThresholdMillisecond != 0 {
+		//log.Infof()
 		//gormLogger := log.NewGormLogger(options.slowThresholdMillisecond)
 		db, err = gorm.Open(mysql.Open(connArgs), &gorm.Config{
 			//Logger: gormLogger,
@@ -178,3 +179,5 @@ func CtxWithTransaction(ctx context.Context, tx *gorm.DB) context.Context {
 	c := context.WithValue(ctx, ctxTransactionKey{}, tx)
 	return c
 }
+
+// todo: create_sql api

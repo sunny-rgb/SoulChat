@@ -9,50 +9,25 @@ package main
 import (
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/google/wire"
-	"gorm.io/gorm"
-	"kratos-realworld/internal/biz"
 	"kratos-realworld/internal/conf"
-	"kratos-realworld/internal/data"
+	"kratos-realworld/internal/data/user"
+	"kratos-realworld/internal/data_struct"
 	"kratos-realworld/internal/server"
 	"kratos-realworld/internal/service"
 )
 
 // Injectors from wire.go:
 
-func initApp(confServer *conf.Server, confData *conf.Data, jwt *conf.JWT, logger log.Logger) (*CustomApp, func(), error) {
-	db := data.NewDatabase(confData)
-	client := data.NewCache(confData)
-	dataData := data.NewData(db, client)
-	userRepo := data.NewUserRepo(dataData, logger)
-	profileRepo := data.NewProfileRepo(dataData, logger)
-	userUsecase := biz.NewUserUsecase(userRepo, profileRepo, logger, jwt)
-	articleRepo := data.NewArticleRepo(dataData, logger)
-	commentRepo := data.NewCommentRepo(dataData, logger)
-	socialUsecase := biz.NewSocialUsecase(articleRepo, profileRepo, commentRepo, logger)
-	conduitService := service.NewConduitService(userUsecase, socialUsecase, logger)
+// initApp init kratos application.
+func initApp(confServer *conf.Server, data *conf.Data, jwt *conf.JWT, logger log.Logger) (*kratos.App, func(), error) {
+	db := data_struct.NewDatabase(data)
+	client := data_struct.NewCache(data)
+	data_structData := data_struct.NewData(db, client)
+	userLogRepo := user.NewUserLogRepo(data_structData, logger)
+	conduitService := service.NewConduitService(userLogRepo, logger)
 	httpServer := server.NewHTTPServer(confServer, jwt, conduitService, logger)
 	grpcServer := server.NewGRPCServer(confServer, conduitService, logger)
 	app := newApp(logger, httpServer, grpcServer)
-	customApp := newCustomApp(app, db)
-	return customApp, func() {
+	return app, func() {
 	}, nil
 }
-
-// wire.go:
-
-type CustomApp struct {
-	App *kratos.App // newApp 返回 *kratos.App
-	DB  *gorm.DB    // data.ProviderSet 里面提供 *gorm.DB，用于在开发环境创建database和对应的table
-}
-
-func newCustomApp(kapp *kratos.App, db *gorm.DB) *CustomApp {
-	return &CustomApp{
-		App: kapp,
-		DB:  db,
-	}
-}
-
-var CustomProviderSet = wire.NewSet(data.ProviderSet, biz.ProviderSet, service.ProviderSet, server.ProviderSet, newApp,
-	newCustomApp,
-)

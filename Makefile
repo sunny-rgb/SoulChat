@@ -59,18 +59,17 @@ wire:
 .PHONY: startdb
 # start db
 startdb:
-	cd deploy && docker-compose up -d
+	cd deploy/mysql && docker-compose up -d
 
 .PHONY: stopdb
 # stop db
 stopdb:
-	cd deploy && docker-compose down
+	cd deploy/mysql && docker-compose down
 
 .PHONY: run
-# dev run
+# run
 run:
-	cp openapi.yaml internal/swagger-ui/openapi.yaml
-	ChatAPP_ENV=development kratos run
+	kratos run
 
 .PHONY: all
 # generate all

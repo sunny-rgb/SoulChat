@@ -47,6 +47,7 @@ func WithAddr(addr string) Option {
 		o.addr = addr
 	}
 }
+
 func newOptions(opts ...Option) Options {
 	// 默认配置
 	options := Options{
